@@ -35,7 +35,7 @@ async function bukti(id) { const r = await call('bukti', { id }); if (r) sheet('
 /* ---- Booking (SWR: tampil dari data login, segarkan di latar belakang) ---- */
 function renderBk() {
   $('#app-container').innerHTML = '<div class="mrow"><h2>Booking</h2><button class="btn sm" onclick="formBk()">+ Booking</button></div>' +
-    (S.bk.map((b, i) => '<div class="card" onclick="detail(' + i + ')" style="cursor:pointer"><div class="mrow"><b>' + esc(b.nama) + '</b><span class="chip ' + (CH[b.status] || '') + '">' + b.status + '</span></div><div class="mu">' + esc(b.no) + ' &middot; ' + (b.jenis === 'harian' ? 'Harian' : 'Per jam') + '<br>' + wkt(b) + '</div><div style="margin-top:6px"><b>' + rp(b.total) + '</b> <span class="mu">&middot; ' + b.bayar + ' (sisa ' + rp(b.total - b.paid) + ')</span></div></div>').join('') || '<p class="mu">Belum ada booking.</p>');
+    (S.bk.map((b, i) => '<div class="card s-' + (CH[b.status] || 'x') + '" onclick="detail(' + i + ')" style="cursor:pointer"><div class="mrow"><b>' + esc(b.nama) + '</b><span class="chip ' + (CH[b.status] || '') + '">' + b.status + '</span></div><div class="mu">' + esc(b.no) + ' &middot; ' + (b.jenis === 'harian' ? 'Harian' : 'Per jam') + '<br>' + wkt(b) + '</div><div style="margin-top:6px"><b>' + rp(b.total) + '</b> <span class="mu">&middot; ' + b.bayar + ' (sisa ' + rp(b.total - b.paid) + ')</span></div></div>').join('') || '<p class="mu">Belum ada booking.</p>');
 }
 async function pageBk() {
   if (S.bk.length) renderBk(); else $('#app-container').innerHTML = '<div class="skel"></div>';
