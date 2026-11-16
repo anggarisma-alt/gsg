@@ -57,9 +57,8 @@ async function simpanKas() { const f = await fileData($('#kf')); if (await call(
 function pageAkun() {
   const adm = S.u.role === 'sekdes';
   $('#app-container').innerHTML = '<h2>Akun</h2><div class="card"><b>' + esc(S.u.nama) + '</b><div class="mu">Peran: ' + esc(S.u.role) + '</div></div><div class="menu">' +
-    '<button class="btn ghost" onclick="pinForm()">Ganti PIN</button>' + (adm ? '<button class="btn ghost" onclick="go2(\'master\')">Master Data (Kategori, Tarif, Pengguna)</button><button class="btn ghost" onclick="cfgForm()">Pengaturan Aplikasi</button>' : '') + '<button class="btn bad" onclick="keluar()">Keluar</button></div>';
+    '<button class="btn ghost" onclick="pinForm()">Ganti PIN</button>' + (adm ? '<button class="btn ghost" onclick="go(\'master\')">Master Data (Kategori, Tarif, Pengguna)</button><button class="btn ghost" onclick="cfgForm()">Pengaturan Aplikasi</button>' : '') + '<button class="btn bad" onclick="keluar()">Keluar</button></div>';
 }
-function go2(p) { S.page = 'akun'; pageMaster(); }
 function pinForm() {
   sheet('<h2>Ganti PIN</h2><label class="field"><span>PIN lama</span><input id="p0" type="password" inputmode="numeric" autocomplete="current-password"></label><label class="field"><span>PIN baru (6-12 angka)</span><input id="p1" type="password" inputmode="numeric" autocomplete="new-password"></label><label class="field"><span>Ulangi PIN baru</span><input id="p2" type="password" inputmode="numeric" autocomplete="new-password"></label><button class="btn w" onclick="pinSimpan()">Simpan PIN</button>');
 }
@@ -72,7 +71,7 @@ async function pinSimpan() {
 async function pageMaster() {
   const c = $('#app-container'); c.innerHTML = '<div class="skel"></div>'; const k = await call('katList'), u = await call('userList'); if (!k) return pageAkun();
   S.kat = k; S.usr = u || [];
-  c.innerHTML = '<button class="btn ghost sm" onclick="pageAkun()">&lsaquo; Akun</button><h2>Master Data</h2><div class="mrow"><h3>Kategori &amp; Tarif</h3><button class="btn sm" onclick="katForm()">+ Tambah</button></div>' +
+  c.innerHTML = '<button class="btn ghost sm" onclick="history.back()">&lsaquo; Akun</button><h2>Master Data</h2><div class="mrow"><h3>Kategori &amp; Tarif</h3><button class="btn sm" onclick="katForm()">+ Tambah</button></div>' +
     k.map((x, i) => '<div class="card" onclick="katForm(' + i + ')" style="cursor:pointer"><b>' + esc(x.nama) + '</b> ' + (x.aktif === false ? '<span class="chip no">Nonaktif</span>' : '') + '<div class="mu">' + rp(x.per_jam) + '/jam &middot; ' + rp(x.per_hari) + '/hari</div></div>').join('') +
     '<div class="mrow"><h3>Pengguna</h3><button class="btn sm" onclick="userForm()">+ Tambah</button></div>' +
     S.usr.map((x, i) => '<div class="card" onclick="userForm(' + i + ')" style="cursor:pointer"><b>' + esc(x.nama) + '</b> ' + (x.aktif ? '' : '<span class="chip no">Nonaktif</span>') + '<div class="mu">' + esc(x.role) + '</div></div>').join('');
@@ -91,10 +90,10 @@ async function userSimpan(id) { if (await call('userSimpan', { id: id || '', nam
 /* ---- Pengaturan aplikasi (Sekdes) ---- */
 async function cfgForm() {
   const c = await call('cfgGet'); if (!c) return;
-  const F = [['nama_desa', 'Nama desa/gedung'], ['alamat', 'Alamat'], ['kontak', 'Kontak WA/telepon'], ['kades_nama', 'Nama Kepala Desa'], ['kades_jabatan', 'Jabatan penandatangan'], ['dp_persen', 'Persentase DP bawaan (%)'], ['open', 'Jam buka (0-23)'], ['close', 'Jam tutup (1-24)']];
+  const F = [['nama_gedung', 'Nama gedung'], ['nama_desa', 'Nama desa'], ['alamat', 'Alamat'], ['kontak', 'Kontak WA/telepon'], ['kades_nama', 'Nama Kepala Desa'], ['kades_jabatan', 'Jabatan penandatangan'], ['dp_persen', 'Persentase DP bawaan (%)'], ['open', 'Jam buka (0-23)'], ['close', 'Jam tutup (1-24)']];
   sheet('<h2>Pengaturan</h2>' + F.map(f => '<label class="field"><span>' + f[1] + '</span><input id="c_' + f[0] + '" value="' + esc(c[f[0]]) + '"></label>').join('') + '<label class="field"><span>Token Fonnte (WA otomatis)</span><input id="c_fonnte_token" type="password" placeholder="Kosongkan jika tidak diubah" autocomplete="off"></label><button class="btn w" onclick="cfgSimpan()">Simpan Pengaturan</button>');
 }
 async function cfgSimpan() {
-  const d = {}; ['nama_desa', 'alamat', 'kontak', 'kades_nama', 'kades_jabatan', 'dp_persen', 'open', 'close', 'fonnte_token'].forEach(k => d[k] = $('#c_' + k).value.trim());
-  if (await call('cfgSimpan', d)) { tutup(); toast('Pengaturan tersimpan.'); S.boot = await call('boot') || S.boot; }
+  const d = {}; ['nama_gedung', 'nama_desa', 'alamat', 'kontak', 'kades_nama', 'kades_jabatan', 'dp_persen', 'open', 'close', 'fonnte_token'].forEach(k => d[k] = $('#c_' + k).value.trim());
+  if (await call('cfgSimpan', d)) { tutup(); toast('Pengaturan tersimpan.'); S.boot = await call('boot') || S.boot; simpanSesi(); terapkanCfg(await pub('cfg', '')); }
 }

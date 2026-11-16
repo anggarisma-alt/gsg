@@ -46,12 +46,24 @@ const tutup = () => { $('#sheet').hidden = true; };
 function shell() {
   const r = S.u && S.u.role, m = [['kal', 'Kalender']];
   if (S.u) { m.push(['bk', 'Booking']); if (['kades', 'sekdes', 'keuangan'].includes(r)) m.push(['kas', 'Kas'], ['dash', 'Ringkasan']); m.push(['akun', 'Akun']); }
+  const act = S.page === 'master' ? 'akun' : S.page;
   $('#nav').hidden = !S.u;
-  $('#nav').innerHTML = m.map(x => '<button class="' + (S.page === x[0] ? 'on' : '') + '" onclick="go(\'' + x[0] + '\')">' + ic(x[0]) + '<span>' + x[1] + '</span></button>').join('');
+  $('#nav').innerHTML = m.map(x => '<button class="' + (act === x[0] ? 'on' : '') + '" onclick="go(\'' + x[0] + '\')">' + ic(x[0]) + '<span>' + x[1] + '</span></button>').join('');
   $('#btnMasuk').textContent = S.u ? 'Keluar' : 'Masuk';
-  $('#who').textContent = S.u ? S.u.nama + ' (' + S.u.role + ')' : 'Gedung Serba Guna Desa';
+  $('#who').textContent = S.u ? S.u.nama + ' (' + S.u.role + ')' : (S.pc ? S.pc.nama_desa : 'Gedung Serba Guna Desa');
 }
-function go(p) { S.page = p; shell(); ({ kal: pageKal, bk: pageBk, kas: pageKas, dash: pageDash, akun: pageAkun })[p](); window.scrollTo(0, 0); }
+// Navigasi dengan riwayat browser: tombol Back pindah halaman, TIDAK logout
+function go(p, noPush) {
+  S.page = p; shell(); if (!noPush) history.pushState({ p: p }, '', '#' + p);
+  ({ kal: pageKal, bk: pageBk, kas: pageKas, dash: pageDash, akun: pageAkun, master: pageMaster })[p](); window.scrollTo(0, 0);
+}
+addEventListener('popstate', e => {
+  const st = e.state || {};
+  if (!$('#sheet').hidden) { $('#sheet').hidden = true; history.pushState({ p: S.page }, '', '#' + S.page); return; } // Back menutup pop-up
+  if (st.p === 'base') { if (S.u) { history.pushState({ p: S.page }, '', '#' + S.page); toast('Untuk keluar akun, buka menu Akun > Keluar.'); } else history.back(); return; }
+  if (st.p && st.p !== S.page) go(!S.u && st.p !== 'kal' ? 'kal' : st.p, 1);
+});
+function simpanSesi() { try { sessionStorage.setItem('gsg_s', JSON.stringify({ tok: S.tok, u: S.u, boot: S.boot })); } catch (e) {} }
 function masuk() {
   if (S.u) return keluar();
   sheet('<h2>Masuk Petugas</h2><label class="field"><span>Username</span><input id="lu" autocomplete="username" autocapitalize="none"></label><label class="field"><span>PIN</span><input id="lp" type="password" inputmode="numeric" autocomplete="current-password"></label><div id="le" class="err-in"></div><button class="btn w" id="lb" onclick="doLogin()">Masuk</button>');
@@ -61,11 +73,11 @@ async function doLogin() {
   try {
     const r = await net(GAS_URL, POST({ action: 'login', data: { username: $('#lu').value, pin: $('#lp').value } }), 30000, 1);
     if (!r.success) { $('#le').textContent = r.message; return; }
-    S.tok = r.data.token; S.u = { nama: r.data.nama, role: r.data.role }; S.boot = r.data.boot; S.bk = r.data.list || [];
+    S.tok = r.data.token; S.u = { nama: r.data.nama, role: r.data.role }; S.boot = r.data.boot; S.bk = r.data.list || []; simpanSesi();
     tutup(); toast('Selamat datang, ' + r.data.nama); go('bk');
   } catch (e) { $('#le').textContent = 'Koneksi gagal, coba lagi.'; } finally { b.disabled = false; bar(false); }
 }
-function keluar() { S.tok = null; S.u = null; go('kal'); }
+function keluar() { S.tok = null; S.u = null; try { sessionStorage.removeItem('gsg_s'); } catch (e) {} go('kal'); }
 
 /* ---- Kalender publik ---- */
 async function pageKal() {
@@ -151,8 +163,13 @@ async function pageDash() {
 }
 
 /* ---- Mulai ---- */
+function terapkanCfg(c) { if (!c) return; S.pc = c; document.title = c.nama_gedung; $('.brand b').textContent = c.nama_gedung.toUpperCase(); shell(); }
 async function boot() {
   let t = 'light'; try { t = localStorage.getItem('gsg_tema') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); } catch (e) {}
-  tema(t); shell(); pageKal();
-  pub('cfg', '').then(c => { if (c) { document.title = c.nama_desa; $('.brand b').textContent = c.nama_desa.toUpperCase(); } });
+  tema(t);
+  try { const x = JSON.parse(sessionStorage.getItem('gsg_s') || 'null'); if (x && x.tok) { S.tok = x.tok; S.u = x.u; S.boot = x.boot; } } catch (e) {} // sesi bertahan saat refresh/Back
+  const h = location.hash.slice(1), ok = ['kal', 'bk', 'kas', 'dash', 'akun', 'master'];
+  const p = S.u ? (ok.includes(h) ? h : 'bk') : 'kal';
+  history.replaceState({ p: 'base' }, '', '#base'); S.page = p; history.pushState({ p: p }, '', '#' + p); go(p, 1);
+  pub('cfg', '').then(terapkanCfg);
 }
