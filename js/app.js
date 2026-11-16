@@ -45,7 +45,7 @@ function sheet(h) { const s = $('#sheet'); s.innerHTML = '<div class="bd" onclic
 const tutup = () => { $('#sheet').hidden = true; };
 function shell() {
   const r = S.u && S.u.role, m = [['kal', 'Kalender']];
-  if (S.u) { m.push(['bk', 'Booking']); if (['kades', 'sekdes', 'keuangan'].includes(r)) m.push(['kas', 'Kas'], ['dash', 'Ringkasan']); m.push(['akun', 'Akun']); }
+  if (S.u) { m.push(['bk', 'Booking']); if (['kades', 'sekdes', 'keuangan'].includes(r)) m.push(['kas', 'Kas'], ['dash', 'Ringkasan']); m.push(['akun', 'Pengaturan']); }
   const act = S.page === 'master' ? 'akun' : S.page;
   $('#nav').hidden = !S.u;
   $('#nav').innerHTML = m.map(x => '<button class="' + (act === x[0] ? 'on' : '') + '" onclick="go(\'' + x[0] + '\')">' + ic(x[0]) + '<span>' + x[1] + '</span></button>').join('');
@@ -60,7 +60,7 @@ function go(p, noPush) {
 addEventListener('popstate', e => {
   const st = e.state || {};
   if (!$('#sheet').hidden) { $('#sheet').hidden = true; history.pushState({ p: S.page }, '', '#' + S.page); return; } // Back menutup pop-up
-  if (st.p === 'base') { if (S.u) { history.pushState({ p: S.page }, '', '#' + S.page); toast('Untuk keluar akun, buka menu Akun > Keluar.'); } else history.back(); return; }
+  if (st.p === 'base') { if (S.u) { history.pushState({ p: S.page }, '', '#' + S.page); toast('Untuk keluar akun, buka menu Pengaturan > Keluar.'); } else history.back(); return; }
   if (st.p && st.p !== S.page) go(!S.u && st.p !== 'kal' ? 'kal' : st.p, 1);
 });
 function simpanSesi() { try { sessionStorage.setItem('gsg_s', JSON.stringify({ tok: S.tok, u: S.u, boot: S.boot })); } catch (e) {} }
