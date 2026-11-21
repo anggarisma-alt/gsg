@@ -3,28 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#1D4ED8">
+  <meta name="theme-color" content="#2563C8">
   <title>GSG MARTADIREDJA</title>
   <link rel="preconnect" href="https://script.google.com">
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
   <div id="bar" aria-hidden="true"></div>
-  <header class="top">
-    <div class="brand"><span class="logo" aria-hidden="true">G</span><div><b>GSG MARTADIREDJA</b><small id="who">Gedung Serba Guna Desa</small></div></div>
-    <div class="act">
-      <button class="ib" id="btnTema" onclick="tema()" aria-label="Ganti tema terang atau gelap"></button>
-      <button class="btn sm" id="btnMasuk" onclick="masuk()">Masuk</button>
+
+  <!-- Halaman login (layar penuh, terbagi dua) -->
+  <div id="login" class="lgw" hidden>
+    <section class="lgl">
+      <span class="logo"></span>
+      <h1 id="lgT">GSG Martadiredja</h1>
+      <p class="lgp">Pengelolaan sewa gedung serba guna desa dalam satu tempat &mdash; rapi, cepat, transparan.</p>
+      <div class="fts">
+        <div class="ft"><i data-i="kal"></i>Jadwal dan booking tanpa bentrok</div>
+        <div class="ft"><i data-i="rec"></i>DP, pelunasan, dan kwitansi PDF otomatis</div>
+        <div class="ft"><i data-i="his"></i>Setiap transaksi tercatat dalam riwayat</div>
+      </div>
+      <div class="lgf" id="lgF">Desa Martadiredja</div>
+    </section>
+    <section class="lgr">
+      <form class="lgc" onsubmit="doLogin();return false">
+        <span class="logo sm"></span>
+        <h2>Selamat datang</h2>
+        <p class="mu" style="margin:0 0 20px">Masuk dengan akun perangkat desa.</p>
+        <div class="field"><label for="lu">Username</label><input id="lu" autocomplete="username" autocapitalize="none" required></div>
+        <div class="field"><label for="lp">PIN</label><div class="pw"><input id="lp" type="password" inputmode="numeric" autocomplete="current-password" required><button type="button" class="eye" id="eye" onclick="eye()" aria-label="Tampilkan PIN"></button></div></div>
+        <div id="le" class="err-in" role="alert"></div>
+        <button class="btn w" id="lb" type="submit">Masuk</button>
+        <p class="mu c">Lupa PIN? Hubungi Sekdes.</p>
+        <button type="button" class="lnk" onclick="history.back()">&lsaquo; Lihat jadwal gedung</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="shell">
+    <aside class="side" id="side">
+      <div class="sbrand"><span class="logo"></span><div><b id="sb1">GSG Martadiredja</b><small id="sb2">Desa Martadiredja</small></div></div>
+      <nav id="sidenav" aria-label="Menu utama"></nav>
+      <div class="suser" id="sideuser"></div>
+    </aside>
+    <div class="main">
+      <header class="top">
+        <div class="brand"><span class="logo"></span><div><b>GSG Martadiredja</b><small id="who">Gedung Serba Guna Desa</small></div></div>
+        <h1 id="ptitle"></h1>
+        <div class="act">
+          <button class="ib" id="btnTema" onclick="tema()" aria-label="Ganti tema terang atau gelap"></button>
+          <button class="btn sm" id="btnMasuk" onclick="masuk()">Masuk</button>
+        </div>
+      </header>
+      <main id="app-container"></main>
     </div>
-  </header>
-  <main id="app-container"></main>
+  </div>
+
   <nav id="nav" class="bnav" aria-label="Menu utama" hidden></nav>
   <div id="sheet" class="sheet" hidden></div>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="js/config.js"></script>
-  <script src="js/app.js?v=5"></script>
-  <script src="js/modul.js?v=5"></script>
+  <script src="js/app.js?v=6"></script>
+  <script src="js/modul.js?v=6"></script>
+  <script src="js/ui.js?v=6"></script>
   <script>boot();</script>
 </body>
 </html>

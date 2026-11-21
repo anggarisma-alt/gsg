@@ -169,7 +169,7 @@ async function boot() {
   tema(t);
   try { const x = JSON.parse(sessionStorage.getItem('gsg_s') || 'null'); if (x && x.tok) { S.tok = x.tok; S.u = x.u; S.boot = x.boot; } } catch (e) {} // sesi bertahan saat refresh/Back
   const h = location.hash.slice(1), ok = ['kal', 'bk', 'lunas', 'kas', 'dash', 'akun', 'master'];
-  const p = S.u ? (ok.includes(h) ? h : 'bk') : 'kal';
+  const p = S.u ? (ok.includes(h) ? h : landing()) : 'kal';
   history.replaceState({ p: 'base' }, '', '#base'); S.page = p; history.pushState({ p: p }, '', '#' + p); go(p, 1);
   pub('cfg', '').then(terapkanCfg);
 }
