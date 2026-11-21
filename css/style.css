@@ -102,3 +102,7 @@ h2{font-size:22px;font-weight:800;letter-spacing:-.3px}h3{font-weight:700}
 /* v3: ukuran sel tanggal tidak lagi bergantung aspect-ratio */
 .cal button{aspect-ratio:auto;height:42px;line-height:1;border-radius:12px}
 .cal{width:100%;max-width:100%}
+
+/* v4: menu Pelunasan */
+.pg{height:8px;border-radius:9px;background:var(--sf2);overflow:hidden;margin:10px 0 8px}.pg i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--pr),var(--pr2))}
+.bnav.n6 button{font-size:10px;padding:0}.bnav.n6 .i{padding:4px 10px}

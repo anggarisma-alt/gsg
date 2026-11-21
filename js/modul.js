@@ -21,7 +21,7 @@ function unduh(b64, nama, mime) {
 /* ---- Pembayaran: riwayat, kwitansi PDF, bukti ---- */
 async function bayar(id) {
   const f = await fileData($('#bf')), r = await call('bayar', { id, mode: window._m, nilai: $('#bn').value, metode: $('#bm').value, file: f });
-  if (!r) return; tutup(); pageBk();
+  if (!r) return; tutup(); S.page === 'lunas' ? pageLunas() : pageBk();
   sheet('<h2>Pembayaran Tercatat</h2><p>' + rp(r.nominal) + ' &middot; ' + esc(r.no) + '</p><button class="btn w" onclick="kwitansi(\'' + r.id + '\')">Unduh Kwitansi (PDF)</button>');
 }
 async function riwayat(id) {
@@ -96,4 +96,22 @@ async function cfgForm() {
 async function cfgSimpan() {
   const d = {}; ['nama_gedung', 'nama_desa', 'alamat', 'kontak', 'kades_nama', 'kades_jabatan', 'dp_persen', 'open', 'close', 'fonnte_token'].forEach(k => d[k] = $('#c_' + k).value.trim());
   if (await call('cfgSimpan', d)) { tutup(); toast('Pengaturan tersimpan.'); S.boot = await call('boot') || S.boot; simpanSesi(); terapkanCfg(await pub('cfg', '')); }
+}
+
+/* ---- Menu Pelunasan: daftar tagihan belum lunas, urut acara terdekat ---- */
+const selisihHari = d => Math.round((new Date(d.slice(0, 10)) - new Date(TODAY)) / 864e5);
+async function pageLunas() {
+  const c = $('#app-container'); if (!S.bk.length) c.innerHTML = '<div class="skel"></div>';
+  const l = await call('list'); if (l) S.bk = l; if (S.page !== 'lunas') return;
+  const L = S.bk.map((b, i) => ({ b: b, i: i, sisa: b.total - b.paid })).filter(x => ['Disetujui', 'Berjalan', 'Selesai'].includes(x.b.status) && x.sisa > 0).sort((a, z) => a.b.mulai < z.b.mulai ? -1 : 1);
+  const tot = L.reduce((t, x) => t + x.sisa, 0), bisa = ['keuangan', 'sekdes'].includes(S.u.role);
+  c.innerHTML = '<h2>Pelunasan</h2><div class="card" style="background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff"><span style="opacity:.85">Total belum dilunasi</span><b style="display:block;font-size:26px;letter-spacing:-.5px">' + rp(tot) + '</b><span style="opacity:.85">' + L.length + ' booking</span></div>' +
+    (L.map(x => {
+      const b = x.b, d = selisihHari(b.mulai), u = d < 0 ? ['Lewat ' + (-d) + ' hari', 'no'] : d === 0 ? ['Hari ini', 'no'] : d <= 3 ? ['H-' + d, 'wr'] : ['H-' + d, ''], pct = Math.min(100, Math.round(b.paid * 100 / b.total));
+      return '<div class="card s-' + (u[1] || 'x') + '"><div class="mrow"><b>' + esc(b.nama) + '</b><span class="chip ' + u[1] + '">' + u[0] + '</span></div><div class="mu">' + esc(b.no) + ' &middot; ' + wkt(b) + '</div><div class="pg"><i style="width:' + pct + '%"></i></div><div class="mrow"><span class="mu">Dibayar ' + rp(b.paid) + ' dari ' + rp(b.total) + '</span><b>Sisa ' + rp(x.sisa) + '</b></div><div class="mrow" style="margin-bottom:0"><button class="btn ghost sm" style="flex:1" onclick="detail(' + x.i + ')">Detail</button>' + (bisa ? '<button class="btn sm" style="flex:2" onclick="lunasForm(' + x.i + ')">Lunasi</button>' : '') + '</div></div>';
+    }).join('') || '<p class="mu">Semua booking sudah lunas.</p>');
+}
+function lunasForm(i) {
+  const b = S.bk[i], s = b.total - b.paid; window._m = 'nominal';
+  sheet('<h2>Pelunasan</h2><p class="mu">' + esc(b.nama) + ' &middot; ' + esc(b.no) + '</p><div class="card" style="background:var(--sf2);box-shadow:none"><span class="mu">Sisa tagihan</span><b style="display:block;font-size:24px">' + rp(s) + '</b></div><label class="field"><span>Nominal dibayar (Rp)</span><input id="bn" type="number" inputmode="numeric" value="' + s + '"></label><label class="field"><span>Metode</span><select id="bm"><option>Tunai</option><option>Transfer</option></select></label><label class="field"><span>Bukti pembayaran (foto, opsional)</span><input id="bf" type="file" accept="image/*"></label><p class="mu">Jika nominal kurang dari sisa, tercatat sebagai cicilan.</p><button class="btn w" onclick="bayar(\'' + b.id + '\')">Catat Pembayaran</button>');
 }

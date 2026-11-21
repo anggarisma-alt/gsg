@@ -2,7 +2,7 @@ const $ = s => document.querySelector(s), pad = n => String(n).padStart(2, '0'),
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const D = new Date(), TODAY = D.getFullYear() + '-' + pad(D.getMonth() + 1) + '-' + pad(D.getDate());
 const S = { tok: null, u: null, page: 'kal', ym: TODAY.slice(0, 7), boot: null, bk: [] };
-const IC = { kal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', bk: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>', kas: '<path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>', dash: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>', akun: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>', tema: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>' };
+const IC = { kal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', bk: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>', kas: '<path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>', dash: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>', akun: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>', lunas: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>', tema: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>' };
 const ic = k => '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[k] + '</svg>';
 
 /* ---- Transport REST: fetch + timeout + retry + idempotensi (reqId) ---- */
@@ -45,9 +45,9 @@ function sheet(h) { const s = $('#sheet'); s.innerHTML = '<div class="bd" onclic
 const tutup = () => { $('#sheet').hidden = true; };
 function shell() {
   const r = S.u && S.u.role, m = [['kal', 'Kalender']];
-  if (S.u) { m.push(['bk', 'Booking']); if (['kades', 'sekdes', 'keuangan'].includes(r)) m.push(['kas', 'Kas'], ['dash', 'Ringkasan']); m.push(['akun', 'Pengaturan']); }
+  if (S.u) { m.push(['bk', 'Booking']); if (['kades', 'sekdes', 'keuangan'].includes(r)) m.push(['lunas', 'Pelunasan'], ['kas', 'Kas'], ['dash', 'Ringkasan']); m.push(['akun', 'Pengaturan']); }
   const act = S.page === 'master' ? 'akun' : S.page;
-  $('#nav').hidden = !S.u;
+  $('#nav').hidden = !S.u; $('#nav').className = 'bnav' + (m.length > 5 ? ' n6' : '');
   $('#nav').innerHTML = m.map(x => '<button class="' + (act === x[0] ? 'on' : '') + '" onclick="go(\'' + x[0] + '\')">' + ic(x[0]) + '<span>' + x[1] + '</span></button>').join('');
   $('#btnMasuk').textContent = S.u ? 'Keluar' : 'Masuk';
   $('#who').textContent = S.u ? S.u.nama + ' (' + S.u.role + ')' : (S.pc ? S.pc.nama_desa : 'Gedung Serba Guna Desa');
@@ -55,7 +55,7 @@ function shell() {
 // Navigasi dengan riwayat browser: tombol Back pindah halaman, TIDAK logout
 function go(p, noPush) {
   S.page = p; shell(); if (!noPush) history.pushState({ p: p }, '', '#' + p);
-  ({ kal: pageKal, bk: pageBk, kas: pageKas, dash: pageDash, akun: pageAkun, master: pageMaster })[p](); window.scrollTo(0, 0);
+  ({ kal: pageKal, bk: pageBk, kas: pageKas, dash: pageDash, akun: pageAkun, master: pageMaster, lunas: pageLunas })[p](); window.scrollTo(0, 0);
 }
 addEventListener('popstate', e => {
   const st = e.state || {};
@@ -168,7 +168,7 @@ async function boot() {
   let t = 'light'; try { t = localStorage.getItem('gsg_tema') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); } catch (e) {}
   tema(t);
   try { const x = JSON.parse(sessionStorage.getItem('gsg_s') || 'null'); if (x && x.tok) { S.tok = x.tok; S.u = x.u; S.boot = x.boot; } } catch (e) {} // sesi bertahan saat refresh/Back
-  const h = location.hash.slice(1), ok = ['kal', 'bk', 'kas', 'dash', 'akun', 'master'];
+  const h = location.hash.slice(1), ok = ['kal', 'bk', 'lunas', 'kas', 'dash', 'akun', 'master'];
   const p = S.u ? (ok.includes(h) ? h : 'bk') : 'kal';
   history.replaceState({ p: 'base' }, '', '#base'); S.page = p; history.pushState({ p: p }, '', '#' + p); go(p, 1);
   pub('cfg', '').then(terapkanCfg);
