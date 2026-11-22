@@ -54,7 +54,7 @@ const bars = (rows, f) => { const mx = Math.max(1, ...rows.map(r => r[1])); retu
 const kc = (t, ic_, v, l) => '<div class="kc"><span class="kt t-' + t + '">' + ic(ic_) + '</span><div><b>' + v + '</b><span class="mu">' + l + '</span></div></div>';
 async function pageDash() {
   const c = $('#app-container'); if (!S.bk.length) c.innerHTML = '<div class="skel"></div>';
-  const r = await Promise.all([call('dash'), call('list')]), d = r[0]; if (!d) return; if (r[1]) S.bk = r[1]; if (S.page !== 'dash') return;
+  const r = await Promise.all([call('dash'), call('list')]), d = r[0]; if (!d) { c.innerHTML = '<div class="card"><p>Dashboard gagal dimuat.</p><button class="btn sm" onclick="pageDash()">Coba lagi</button></div>'; return; } if (r[1]) S.bk = r[1]; if (S.page !== 'dash') return;
   const ak = S.bk.filter(b => !b.status.startsWith('Dibatalkan')), hr = ak.filter(b => b.jenis === 'harian').length, pc = ak.length ? Math.round(hr * 100 / ak.length) : 0;
   const kat = S.boot.kategori.map(k => [k.nama, ak.filter(b => b.kategori_id === k.id).length]).sort((a, z) => z[1] - a[1]);
   const nx = S.bk.filter(b => ['Disetujui', 'Berjalan'].includes(b.status) && b.selesai.slice(0, 10) >= TODAY).sort((a, z) => a.mulai < z.mulai ? -1 : 1).slice(0, 5);
